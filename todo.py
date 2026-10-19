@@ -1,5 +1,9 @@
 tasks = []
 
+def show_tasks(tasks):
+    for i, task in enumerate(tasks, start=1):
+        print(f" {i}) {task}")
+
 while True:
     choice = input("(a)dd, (v)iew, (d)elete, or (q)uit? ")
 
@@ -12,15 +16,13 @@ while True:
         if not tasks:
             print("No tasks yet!")
         else:
-            for i, task in enumerate(tasks, start=1):
-                print(f" {i}) {task}")
+            show_tasks(tasks)
 
     elif choice == "d":
         if not tasks:
             print("No tasks to delete!")
         else:
-            for i, task in enumerate(tasks, start=1):
-                                                    print(f" {i}) {task}")
+            show_tasks(tasks)
             number_text = input("Which task number would you like to delete? ")
             try:
                 task_index = int(number_text) - 1
