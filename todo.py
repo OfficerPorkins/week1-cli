@@ -8,9 +8,11 @@ while True:
         tasks.append(task)
         print("Added!")
     elif choice == "v":
-        for task in tasks:
-            enumerate(tasks)
-            print("-", task)
+        if not tasks:
+            print("No tasks yet!")
+        else:
+            for i, task in enumerate(tasks, start=1):
+                print(f" {i}. {task}")
     elif choice == "q":
         print("Goodbye!")
         break
