@@ -1,39 +1,30 @@
 tasks = []
 
-# try to open "tasks.txt" for reading
-#     for each line in the file
-#         strip the newline off the line
-#         add it to the tasks list
-# if the file doesn't exist yet
-#     do nothing (the list just starts empty)
-try:
-    with open("tasks.txt", "r") as f:
-        for line in f:
-            tasks.append(line.strip())
-except FileNotFoundError:
-    pass  # If the file doesn't exist, we just start with an empty list
+# Loading disabled for now (JSON is next)
+# try:
+#     with open("tasks.txt", "r") as f:
+#         for line in f:
+#             tasks.append(line.strip())
+# except FileNotFoundError:
+#     pass
 
 def show_tasks(tasks):
     for i, task in enumerate(tasks, start=1):
-        print(f" {i}) {task}")
+        mark = "x" if task["done"] else " "
+        print(f" {i}) [{mark}] {task['title']}")
 
 def save_tasks(tasks):
-    # open "tasks.txt" for writing
-    #     for each task in the list
-    #         write the task and a newline to the file
     with open("tasks.txt", "w") as f:
         for task in tasks:
             f.write(task + "\n")
 
 while True:
-    choice = input("(a)dd, (v)iew, (d)elete, or (q)uit? ")
-
-    
+    choice = input("(a)dd, (v)iew, (c)omplete, (d)elete, or (q)uit? ")
 
     if choice == "a":
         task = input("What is the task? ")
-        tasks.append(task)
-        save_tasks(tasks)
+        tasks.append({"title": task, "done": False})
+        # save_tasks(tasks)   # disabled for now
         print(f"Added! You now have {len(tasks)} task(s).")
 
     elif choice == "v":
@@ -41,6 +32,22 @@ while True:
             print("No tasks yet!")
         else:
             show_tasks(tasks)
+
+    elif choice == "c":
+        if not tasks:
+            print("No tasks to complete!")
+        else:
+            show_tasks(tasks)
+            number_text = input("Which task number is done? ")
+            try:
+                task_index = int(number_text) - 1
+                if 0 <= task_index < len(tasks):
+                    tasks[task_index]["done"] = True
+                    print("Marked as done!")
+                else:
+                    print("Invalid task number.")
+            except ValueError:
+                print("Invalid task number.")
 
     elif choice == "d":
         if not tasks:
@@ -52,8 +59,8 @@ while True:
                 task_index = int(number_text) - 1
                 if 0 <= task_index < len(tasks):
                     deleted_task = tasks.pop(task_index)
-                    print(f"Deleted task: {deleted_task}")
-                    save_tasks(tasks)
+                    print(f"Deleted task: {deleted_task['title']}")
+                    # save_tasks(tasks)   # disabled for now
                 else:
                     print("Invalid task number.")
             except ValueError:
@@ -64,4 +71,4 @@ while True:
         break
 
     else:
-        print("Please type a, v, d, or q.")
+        print("Please type a, v, c, d, or q.")
