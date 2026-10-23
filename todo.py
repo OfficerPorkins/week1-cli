@@ -1,12 +1,4 @@
-tasks = []
-
-# Loading disabled for now (JSON is next)
-# try:
-#     with open("tasks.txt", "r") as f:
-#         for line in f:
-#             tasks.append(line.strip())
-# except FileNotFoundError:
-#     pass
+import json
 
 def show_tasks(tasks):
     for i, task in enumerate(tasks, start=1):
@@ -14,9 +6,17 @@ def show_tasks(tasks):
         print(f" {i}) [{mark}] {task['title']}")
 
 def save_tasks(tasks):
-    with open("tasks.txt", "w") as f:
-        for task in tasks:
-            f.write(task + "\n")
+    with open("tasks.json", "w") as f:
+        json.dump(tasks, f, indent=2)
+
+def load_tasks():
+    try:
+        with open("tasks.json", "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+
+tasks = load_tasks()
 
 while True:
     choice = input("(a)dd, (v)iew, (c)omplete, (d)elete, or (q)uit? ")
@@ -24,8 +24,8 @@ while True:
     if choice == "a":
         task = input("What is the task? ")
         tasks.append({"title": task, "done": False})
-        # save_tasks(tasks)   # disabled for now
         print(f"Added! You now have {len(tasks)} task(s).")
+        save_tasks(tasks)
 
     elif choice == "v":
         if not tasks:
@@ -44,8 +44,9 @@ while True:
                 if 0 <= task_index < len(tasks):
                     tasks[task_index]["done"] = True
                     print("Marked as done!")
+                    save_tasks(tasks)
                 else:
-                    print("Invalid task number.")
+                    print("Invalid task number.")                   
             except ValueError:
                 print("Invalid task number.")
 
@@ -60,7 +61,7 @@ while True:
                 if 0 <= task_index < len(tasks):
                     deleted_task = tasks.pop(task_index)
                     print(f"Deleted task: {deleted_task['title']}")
-                    # save_tasks(tasks)   # disabled for now
+                    save_tasks(tasks)   
                 else:
                     print("Invalid task number.")
             except ValueError:
