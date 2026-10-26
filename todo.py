@@ -1,4 +1,5 @@
 import json
+import os
 
 def show_tasks(tasks):
     for i, task in enumerate(tasks, start=1):
@@ -14,6 +15,10 @@ def load_tasks():
         with open("tasks.json", "r") as f:
             return json.load(f)
     except FileNotFoundError:
+        return []
+    except json.JSONDecodeError:
+        os.replace("tasks.json", "tasks.json.bak")
+        print("Error: tasks.json is corrupted. Starting with an empty task list.")
         return []
 
 tasks = load_tasks()
