@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 def show_tasks(tasks):
     for i, task in enumerate(tasks, start=1):
@@ -17,6 +18,8 @@ def load_tasks():
     except FileNotFoundError:
         return []
     except json.JSONDecodeError:
+        if os.path.exists("tasks.json.bak"):
+            os.replace("tasks.json.bak", f"tasks.json.bak.{datetime.now().strftime('%Y%m%d%H%M%S')}")
         os.replace("tasks.json", "tasks.json.bak")
         print("Error: tasks.json is corrupted. Starting with an empty task list.")
         return []
