@@ -24,6 +24,27 @@ def load_tasks():
         print("Error: tasks.json is corrupted. Starting with an empty task list.")
         return []
 
+def get_task_index(tasks):
+    if not tasks:
+        print("No tasks to modify!")
+        return None
+
+    show_tasks(tasks)
+    number_text = input("Which task number? ")
+
+    try:
+        task_index = int(number_text) - 1
+
+    except ValueError:
+        print("Invalid task number.")
+        return None
+
+    if not (0 <= task_index < len(tasks)):
+        print("Invalid task number.")
+        return None
+
+    return task_index
+
 tasks = load_tasks()
 
 while True:
@@ -41,39 +62,19 @@ while True:
         else:
             show_tasks(tasks)
 
-    elif choice == "c":
-        if not tasks:
-            print("No tasks to complete!")
-        else:
-            show_tasks(tasks)
-            number_text = input("Which task number is done? ")
-            try:
-                task_index = int(number_text) - 1
-                if 0 <= task_index < len(tasks):
-                    tasks[task_index]["done"] = True
-                    print("Marked as done!")
-                    save_tasks(tasks)
-                else:
-                    print("Invalid task number.")                   
-            except ValueError:
-                print("Invalid task number.")
+    elif choice in ["c", "d"]:
+        task_index = get_task_index(tasks)
+        if task_index is None:
+            continue
 
-    elif choice == "d":
-        if not tasks:
-            print("No tasks to delete!")
+        if choice == "c":
+            tasks[task_index]["done"] = True
+            print("Marked as done!")
         else:
-            show_tasks(tasks)
-            number_text = input("Which task number would you like to delete? ")
-            try:
-                task_index = int(number_text) - 1
-                if 0 <= task_index < len(tasks):
-                    deleted_task = tasks.pop(task_index)
-                    print(f"Deleted task: {deleted_task['title']}")
-                    save_tasks(tasks)   
-                else:
-                    print("Invalid task number.")
-            except ValueError:
-                print("Invalid task number.")
+            deleted_task = tasks.pop(task_index)
+            print(f"Deleted task: {deleted_task['title']}")
+
+        save_tasks(tasks)
 
     elif choice == "q":
         print("Goodbye!")
