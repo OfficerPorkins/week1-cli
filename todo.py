@@ -32,23 +32,29 @@ def get_task_index(tasks):
     show_tasks(tasks)
     number_text = input("Which task number? ")
 
-    try:
-        task_index = int(number_text) - 1
+    task_index = parse_task_number(number_text, len(tasks))
 
-    except ValueError:
+    if task_index is None:
         print("Invalid task number.")
         return None
-
-    if not (0 <= task_index < len(tasks)):
-        print("Invalid task number.")
-        return None
-
+    
     return task_index
+
+def parse_task_number(text, count):
+    try:
+        task_number = int(text)
+    except ValueError:
+        return None
+
+    if not (1 <= task_number <= count):
+        return None
+
+    return task_number - 1
 
 tasks = load_tasks()
 
 while True:
-    choice = input("(a)dd, (v)iew, (c)omplete, (d)elete, or (q)uit? ")
+    choice = input("(a)dd, (e)dit, (v)iew, (c)omplete, (d)elete, or (q)uit? ")
 
     if choice == "a":
         task = input("What is the task? ")
@@ -62,7 +68,7 @@ while True:
         else:
             show_tasks(tasks)
 
-    elif choice in ["c", "d"]:
+    elif choice in ["c", "d", "e"]:
         task_index = get_task_index(tasks)
         if task_index is None:
             continue
@@ -70,9 +76,13 @@ while True:
         if choice == "c":
             tasks[task_index]["done"] = True
             print("Marked as done!")
-        else:
+        elif choice == "d":
             deleted_task = tasks.pop(task_index)
             print(f"Deleted task: {deleted_task['title']}")
+        elif choice == "e":
+            new_title = input("What is the new title? ")
+            tasks[task_index]["title"] = new_title
+            print("Task updated!")
 
         save_tasks(tasks)
 
@@ -81,4 +91,4 @@ while True:
         break
 
     else:
-        print("Please type a, v, c, d, or q.")
+        print("Please type a, e, v, c, d, or q.")
