@@ -2,6 +2,7 @@ import json
 import os
 from datetime import datetime
 
+
 def show_tasks(tasks):
     for i, task in enumerate(tasks, start=1):
         mark = "x" if task["done"] else " "
@@ -51,44 +52,47 @@ def parse_task_number(text, count):
 
     return task_number - 1
 
-tasks = load_tasks()
+def main():
+    tasks = load_tasks()
 
-while True:
-    choice = input("(a)dd, (e)dit, (v)iew, (c)omplete, (d)elete, or (q)uit? ")
+    while True:
+        choice = input("(a)dd, (e)dit, (v)iew, (c)omplete, (d)elete, or (q)uit? ")
 
-    if choice == "a":
-        task = input("What is the task? ")
-        tasks.append({"title": task, "done": False})
-        print(f"Added! You now have {len(tasks)} task(s).")
-        save_tasks(tasks)
+        if choice == "a":
+            task = input("What is the task? ")
+            tasks.append({"title": task, "done": False})
+            print(f"Added! You now have {len(tasks)} task(s).")
+            save_tasks(tasks)
 
-    elif choice == "v":
-        if not tasks:
-            print("No tasks yet!")
+        elif choice == "v":
+            if not tasks:
+                print("No tasks yet!")
+            else:
+                show_tasks(tasks)
+
+        elif choice in ["c", "d", "e"]:
+            task_index = get_task_index(tasks)
+            if task_index is None:
+                continue
+
+            if choice == "c":
+                tasks[task_index]["done"] = True
+                print("Marked as done!")
+            elif choice == "d":
+                deleted_task = tasks.pop(task_index)
+                print(f"Deleted task: {deleted_task['title']}")
+            elif choice == "e":
+                new_title = input("What is the new title? ")
+                tasks[task_index]["title"] = new_title
+                print("Task updated!")
+
+            save_tasks(tasks)
+
+        elif choice == "q":
+            print("Goodbye!")
+            break
+
         else:
-            show_tasks(tasks)
-
-    elif choice in ["c", "d", "e"]:
-        task_index = get_task_index(tasks)
-        if task_index is None:
-            continue
-
-        if choice == "c":
-            tasks[task_index]["done"] = True
-            print("Marked as done!")
-        elif choice == "d":
-            deleted_task = tasks.pop(task_index)
-            print(f"Deleted task: {deleted_task['title']}")
-        elif choice == "e":
-            new_title = input("What is the new title? ")
-            tasks[task_index]["title"] = new_title
-            print("Task updated!")
-
-        save_tasks(tasks)
-
-    elif choice == "q":
-        print("Goodbye!")
-        break
-
-    else:
-        print("Please type a, e, v, c, d, or q.")
+            print("Please type a, e, v, c, d, or q.")
+if __name__ == "__main__":
+    main()
