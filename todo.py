@@ -3,96 +3,78 @@ import os
 from datetime import datetime
 
 
-def show_tasks(tasks):
-    for i, task in enumerate(tasks, start=1):
-        mark = "x" if task["done"] else " "
-        print(f" {i}) [{mark}] {task['title']}")
+def save_tasks(tasks, path="tasks.json"):
+    with open(path, "w") as f:
+        json.dump(tasks, f)
 
-def save_tasks(tasks):
-    with open("tasks.json", "w") as f:
-        json.dump(tasks, f, indent=2)
 
-def load_tasks():
+def load_tasks(path="tasks.json"):
     try:
-        with open("tasks.json", "r") as f:
+        with open(path) as f:
             return json.load(f)
     except FileNotFoundError:
         return []
     except json.JSONDecodeError:
-        if os.path.exists("tasks.json.bak"):
-            os.replace("tasks.json.bak", f"tasks.json.bak.{datetime.now().strftime('%Y%m%d%H%M%S')}")
-        os.replace("tasks.json", "tasks.json.bak")
-        print("Error: tasks.json is corrupted. Starting with an empty task list.")
+        bak = path + ".bak"
+        if os.path.exists(bak):
+            stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+            os.replace(bak, f"{bak}.{stamp}")
+        os.replace(path, bak)
+        print(f"{path} was corrupted; old data saved to {bak}")
         return []
 
-def get_task_index(tasks):
-    if not tasks:
-        print("No tasks to modify!")
-        return None
-
-    show_tasks(tasks)
-    number_text = input("Which task number? ")
-
-    task_index = parse_task_number(number_text, len(tasks))
-
-    if task_index is None:
-        print("Invalid task number.")
-        return None
-    
-    return task_index
-
 def parse_task_number(text, count):
+    """Turn user input like '2' into a 0-based index, or None if invalid."""
     try:
-        task_number = int(text)
+        number = int(text)
     except ValueError:
         return None
-
-    if not (1 <= task_number <= count):
+    if number < 1 or number > count:
         return None
+    return number - 1
 
-    return task_number - 1
+
+def show_tasks(tasks):
+    if not tasks:
+        print("No tasks yet.")
+        return
+    for i, task in enumerate(tasks, start=1):
+        mark = "x" if task["done"] else " "
+        print(f"{i}. [{mark}] {task['title']}")
+
+
+def get_task_index(tasks):
+    text = input("Task number: ")
+    index = parse_task_number(text, len(tasks))
+    if index is None:
+        print("Invalid task number.")
+        return None
+    return index
+
 
 def main():
     tasks = load_tasks()
-
     while True:
-        choice = input("(a)dd, (e)dit, (v)iew, (c)omplete, (d)elete, or (q)uit? ")
-
+        choice = input("(a)dd, (v)iew, (c)omplete, (d)elete, (e)dit, (q)uit: ").lower()
         if choice == "a":
-            task = input("What is the task? ")
-            tasks.append({"title": task, "done": False})
-            print(f"Added! You now have {len(tasks)} task(s).")
-            save_tasks(tasks)
-
+            tasks.append({"title": input("Task: "), "done": False})
         elif choice == "v":
-            if not tasks:
-                print("No tasks yet!")
-            else:
-                show_tasks(tasks)
-
-        elif choice in ["c", "d", "e"]:
-            task_index = get_task_index(tasks)
-            if task_index is None:
+            show_tasks(tasks)
+        elif choice in ("c", "d", "e"):
+            index = get_task_index(tasks)
+            if index is None:
                 continue
-
             if choice == "c":
-                tasks[task_index]["done"] = True
-                print("Marked as done!")
+                tasks[index]["done"] = True
             elif choice == "d":
-                deleted_task = tasks.pop(task_index)
-                print(f"Deleted task: {deleted_task['title']}")
+                tasks.pop(index)
             elif choice == "e":
-                new_title = input("What is the new title? ")
-                tasks[task_index]["title"] = new_title
-                print("Task updated!")
-
-            save_tasks(tasks)
-
+                tasks[index]["title"] = input("New title: ")
         elif choice == "q":
-            print("Goodbye!")
+            save_tasks(tasks)
             break
+        save_tasks(tasks)
 
-        else:
-            print("Please type a, e, v, c, d, or q.")
+
 if __name__ == "__main__":
     main()
