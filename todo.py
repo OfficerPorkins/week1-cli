@@ -2,6 +2,13 @@ import json
 import os
 from datetime import datetime
 
+class Task:
+    def __init__(self, title):
+        self.title = title
+        self.done = False
+
+    def complete(self):
+        self.done = True
 
 def save_tasks(tasks, path="tasks.json"):
     with open(path, "w") as f:

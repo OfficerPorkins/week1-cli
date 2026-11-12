@@ -1,5 +1,5 @@
 import os
-from todo import parse_task_number, save_tasks, load_tasks
+from todo import parse_task_number, save_tasks, load_tasks, Task
 
 def test_valid_number():
     assert parse_task_number("1", 3) == 0
@@ -46,3 +46,10 @@ def test_load_corrupted_file_backs_up_and_returns_empty_list(tmp_path):
 
     with open(bak) as f:
         assert f.read() == "not valid json"
+
+def test_task_title_done_and_completed():
+    t = Task("Write tests")
+    assert t.title == "Write tests"
+    assert not t.done
+    t.complete()
+    assert t.done
