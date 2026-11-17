@@ -1,6 +1,22 @@
 import os
 from todo import parse_task_number, save_tasks, load_tasks, Task
 
+def test_to_dict():
+    t = Task("buy milk")
+    assert t.to_dict() == {"title": "buy milk", "done": False}
+
+def test_from_dict():
+    t = Task.from_dict({"title": "buy milk", "done": True})
+    assert t.title == "buy milk"
+    assert t.done == True
+
+def test_round_trip():
+    original = Task("buy milk")
+    original.complete()
+    copy = Task.from_dict(original.to_dict())
+    assert copy.title == original.title
+    assert copy.done == original.done
+
 def test_valid_number():
     assert parse_task_number("1", 3) == 0
     assert parse_task_number("2", 3) == 1

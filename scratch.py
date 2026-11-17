@@ -1,14 +1,15 @@
-tasks = [
-    {"title": "buy milk", "done": False},
-    {"title": "call mom", "done": True},
-]
+class Dog:
+    def __init__(self, name):
+        self.name = name
+        self.tricks = []
 
-for task in tasks:
-    mark = "x" if task["done"] else " "
-    print(f"[{mark}] {task['title']}")
+    def learn(self, trick):
+        self.tricks.append(trick)
 
-tasks[0]["done"] = True
+rex = Dog("Rex")
+fido = Dog("Fido")
+rex.learn("sit")
 
-for task in tasks:
-    mark = "x" if task["done"] else " "
-    print(f"[{mark}] {task['title']}")
+print(rex.tricks)
+print(fido.tricks)
+print(fido.learn("roll over"))

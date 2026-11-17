@@ -10,6 +10,15 @@ class Task:
     def complete(self):
         self.done = True
 
+    def to_dict(self):
+        return {"title": self.title, "done": self.done}
+
+    @classmethod
+    def from_dict(cls, data):
+        task = cls(data["title"])
+        task.done = data["done"]
+        return task
+
 def save_tasks(tasks, path="tasks.json"):
     with open(path, "w") as f:
         json.dump(tasks, f)
